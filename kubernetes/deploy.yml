@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       labels:
-        app: hello-udacity--app
+        app: hello-udacity-app
     spec:
       affinity:
         nodeAffinity:
