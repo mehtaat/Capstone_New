@@ -71,13 +71,13 @@ jobs:
             mv /tmp/eksctl /usr/local/bin
       - run:
           name: create new cluster
-          command: |
-            # if eksctl create cluster --name devops --region=us-west-2
+          command: |            
             if eksctl create cluster --config-file=devopsapp.yml
             then
               echo "creating new Stack"
               aws eks update-kubeconfig --name devops --region us-west-2
-              kubectl create deploy devops --image="mehtaat/hello-udacity-image:${CIRCLE_WORKFLOW_ID:0:7}"
+              # kubectl create deploy devops --image="mehtaat/hello-udacity-image:${CIRCLE_WORKFLOW_ID:0:7}"
+              kubectl apply -f kubernetes/deploy.yml
               kubectl expose deployment devops --type=LoadBalancer --port=80 --target-port=80
             else
               aws eks update-kubeconfig --name devops --region us-west-2
