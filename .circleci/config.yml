@@ -13,7 +13,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws delete cluster --stack-name --region=us-west-2 "eksctl-${CIRCLE_WORKFLOW_ID:0:7}"
+            eksctl delete cluster -f devopsapp.yaml
 
 jobs:
   build:
@@ -44,15 +44,15 @@ jobs:
       - run:
           name: Build docker container
           command: |
-            docker build --tag=hello-udacity-image .
+            docker build --tag=hello-image .
             docker image ls
       - run:
           name: Upload Docker to Dockerhub
           command: |
-            dockerpath="mehtaat/hello-udacity-image"
+            dockerpath="mehtaat/hello-image"
             docker login --username=mehtaat --password=$DOCKER_PASSWORD
-            docker tag "hello-udacity-image" "${dockerpath}:${CIRCLE_WORKFLOW_ID:0:7}"
-            docker tag "hello-udacity-image" "${dockerpath}:latest"
+            docker tag "hello-image" "${dockerpath}:${CIRCLE_WORKFLOW_ID:0:7}"
+            docker tag "hello-image" "${dockerpath}:latest"
             docker push "${dockerpath}:${CIRCLE_WORKFLOW_ID:0:7}"
             docker push "${dockerpath}:latest"
 
@@ -77,14 +77,21 @@ jobs:
               echo "creating new Stack"
               aws eks update-kubeconfig --name devops --region us-west-2              
               kubectl apply -f kubernetes/deploy.yml
-              # kubectl expose deployment devops --type=LoadBalancer --port=80 --target-port=80
               kubectl apply -f kubernetes/service.yml
+
+              kubectl get deployments
+              kubectl get services
             else
               aws eks update-kubeconfig --name devops --region us-west-2
               echo "update existing Stack"
+              kubectl get deployments
+              kubectl get services
               kubectl get deploy,rs,svc,pods
-              kubectl set image deployment/devops hello-udacity-image="mehtaat/hello-udacity-image:${CIRCLE_WORKFLOW_ID:0:7}"
+              kubectl set image deployment/devops hello-image="mehtaat/hello-image:${CIRCLE_WORKFLOW_ID:0:7}"
+              kubectl get deployments
+              kubectl get rs
             fi
+      - destroy-environment
 
   smoke-test:
     docker:
@@ -99,12 +106,16 @@ jobs:
           name: Test load balancer
           command: |
             aws eks update-kubeconfig --name devops --region us-west-2
-            if curl -s http://a115bdbb1f1da47d39ae427c9749753b-187578367.us-west-2.elb.amazonaws.com/ | grep "Udacity"
+            export DNS=$(aws elb describe-load-balancers --query LoadBalancerDescriptions[*].DNSName --output text)
+            export URL="http://${DNS}"
+            echo "URL = ${URL}"
+            if curl -s "${API_URL}/api/status" | grep "ok"
             then
               echo "Verified!"
             else
               kubectl rollout undo deployments/devops
             fi
+      - destroy-environment
 
 workflows:
   default:
