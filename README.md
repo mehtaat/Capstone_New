@@ -9,3 +9,4 @@ ScreenShots added for below points: -
 6) Application is available from outside.
 7) Cluster is ready.
 8) Pipeline with all steps.
+9) Hello Image Rolling updated.
