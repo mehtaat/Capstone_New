@@ -13,7 +13,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            eksctl delete cluster -f devopsapp.yaml
+            eksctl delete cluster -f devopsapp.yml
 
 jobs:
   build:
@@ -87,7 +87,7 @@ jobs:
               kubectl get deployments
               kubectl get services
               kubectl get deploy,rs,svc,pods
-              kubectl set image deployment/devops hello-image="mehtaat/hello-image:${CIRCLE_WORKFLOW_ID:0:7}"
+              kubectl set image deployment/devops hello-app="mehtaat/hello-image:${CIRCLE_WORKFLOW_ID:0:7}"
               kubectl get deployments
               kubectl get rs
             fi
@@ -109,7 +109,7 @@ jobs:
             export DNS=$(aws elb describe-load-balancers --query LoadBalancerDescriptions[*].DNSName --output text)
             export URL="http://${DNS}"
             echo "URL = ${URL}"
-            if curl -s "${API_URL}/api/status" | grep "ok"
+            if curl -s "${URL}/api/status" | grep "ok"
             then
               echo "Verified!"
             else
