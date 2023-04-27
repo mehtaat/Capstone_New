@@ -106,7 +106,7 @@ jobs:
           name: Test load balancer
           command: |
             aws eks update-kubeconfig --name devops --region us-west-2
-            export DNS=$(aws elb describe-load-balancers --query LoadBalancerDescriptions[*].DNSName --output text)
+            export DNS=$(aws elb describe-load-balancers --query LoadBalancerDescriptions[*].CanonicalHostedZoneName --output text)
             export URL="http://${DNS}"
             echo "URL = ${URL}"
             if curl -s "${URL}/api/status" | grep "ok"

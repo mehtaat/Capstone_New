@@ -8,4 +8,4 @@ ScreenShots added for below points: -
 5) EC2 LB details showing 2 EC2 instances are connected to it.
 6) Application is available from outside.
 7) Cluster is ready.
-
+8) Pipeline with all steps.
