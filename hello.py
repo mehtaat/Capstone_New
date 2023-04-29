@@ -2,8 +2,6 @@
 from flask import Flask
 app = Flask(__name__)
 
-this is not good
-
 @app.route("/")
 def index():
     return "<p>Hello .. Welcome to the World of Learning!</p>" 

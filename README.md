@@ -14,3 +14,4 @@ Created a simple static website with Roling update deployed as a docker image in
 10) EC2 Instances.
 11) Load Balancer Instance Details.
 12) EC2 LB details showing 2 EC2 instances are connected to it.
+13) Added 2 screen shots showing lint command failing.
