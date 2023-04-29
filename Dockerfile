@@ -2,7 +2,6 @@ FROM python:3.7.3-stretch
 
 WORKDIR /app
 
-This is not good == This is bad.
 
 COPY hello.py /app/
 COPY requirements.txt /app/
